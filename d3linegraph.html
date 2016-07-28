@@ -1,0 +1,131 @@
+<html lang="en">
+<head>
+  
+   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+   <style>
+
+    
+   </style>
+   
+</head>
+<body>
+  <svg id="cont" width="1100" height="800"></svg>
+   <script>
+     var urban =[];
+     var rural =[];
+       d3.json("first.json", function(data)
+       {
+         for(var i=0;i<data.length;i++)
+         {
+           if(data[i].IndicatorName == "Rural population (% of total population)")
+           {
+             rural.push(data[i]);
+           }
+           else
+           {
+             urban.push(data[i]);
+           }
+         }
+         console.log(rural);
+         console.log(urban);
+          
+          var vis = d3.select("#cont"),
+              width =1100,
+              height = 500,
+              margin = {top: 20,right: 20,bottom: 20,left: 230},
+             
+              xScale = d3.scale.linear().range([margin.left, width - margin.right]).domain(d3.extent(data.map(function(datum){return datum.Year}))),
+              yScale = d3.scale.linear().range([height - margin.top, margin.bottom]).domain([0,90]);
+             
+              xAxis = d3.svg.axis().scale(xScale),
+              yAxis = d3.svg.axis().scale(yScale);
+              
+              vis.append("text")     
+                   .attr("x", 650 )
+                   .attr("y", 550 )
+                   .style("text-anchor", "middle")
+                   .attr("font-size",22)
+                   .style("font-weight","bold")
+                   .text("Year");
+             
+              vis.append("text")      
+                   .attr("x", -250 )
+                   .attr("y", 150 )
+                   .style("text-anchor", "middle")
+                   .attr("transform", "rotate(-90)")
+                   .attr("font-size",22)
+                   .style("font-weight","bold")
+                   .text("Value ( % of Value)");
+
+              vis.append("g")
+                    .attr("class","axis")
+                    .attr("transform", "translate(0," + (height - 20) + ")")
+                    .style("font-weight","normal")
+                    .call(xAxis);
+
+              
+              yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient("left");
+                   
+            
+              vis.append("g")
+                  .attr("class","axis")
+                  .attr("transform", "translate(" + (margin.left) + ",6)")
+                  .style("font-weight","normal")
+                  .call(yAxis)
+                  .attr("y", 5)
+                  .attr("dy", ".71em")
+                  .style("text-anchor", "end");
+              
+              var canvas=d3.select("body").append("svg")
+                  .attr("width", 500)
+                  .attr("height",500);
+              
+              var lineGen = d3.svg.line()
+                  .x(function(d){return xScale(d.Year);})
+                  .y(function(d){return yScale(d.value);})
+               
+                  vis.append('path')
+                      .attr('d', lineGen(urban))
+                      .attr('stroke', 'green')
+                      .attr('stroke-width', 2)
+                      .attr('fill', 'none');
+               
+                  vis.append('path')
+                      .attr('d', lineGen(rural))
+                      .attr('stroke', 'blue')
+                      .attr('stroke-width', 2)
+                      .attr('fill', 'none');
+               
+              //Comparison between urban and rural
+
+                  vis.append('text')
+                      .attr('fill', 'black')
+                      .attr('x', 730 + margin.left + 8)
+                      .attr('y', 0  * 24 + 24)
+                      .text("Rural");
+                
+                  vis.append('rect')
+                      .attr('fill', "blue")
+                      .attr('width', 60)
+                      .attr('height', 20)
+                      .attr('x', 700 + margin.left + 90)
+                      .attr('y', 0 * 24 + 6);
+                 
+                  vis.append('text')
+                      .attr('fill', 'black')
+                      .attr('x', 730 + margin.left + 8)
+                      .attr('y', 1 * 24 + 24)
+                      .text("Urban");
+                 
+                  vis.append('rect')
+                      .attr('fill', "green")
+                      .attr('width', 60)
+                      .attr('height', 20)
+                      .attr('x', 700 + margin.left + 90)
+                      .attr('y', 1 * 24 + 6);
+         });
+   </script>
+</body>
+</html
